@@ -343,7 +343,8 @@ double maxiOsc::sawn(double frequency) {
 	//Bandlimited sawtooth generator. Woohoo.
 	if ( phase >= 0.5 ) phase -= 1.0;
 	phase += (1./(maxiSettings::sampleRate/(frequency)));
-	double temp=(8820.22/frequency)*phase;
+	// At 0 Hz and phase 0 the product is inf*0 = NaN; its limit is 0.
+	double temp = phase == 0.0 ? 0.0 : (8820.22/frequency)*phase;
 	if (temp<-0.5) {
 		temp=-0.5;
 	}
@@ -352,8 +353,10 @@ double maxiOsc::sawn(double frequency) {
 	}
 	temp*=1000.0f;
 	temp+=500.0f;
-	double remainder = temp - floor(temp);
-	output = (double) ((1.0f-remainder) * transition[(long)temp] + remainder * transition[1+(long)temp]) - phase;
+	// Cap at 999 so index+1 stays inside transition[1001]; remainder 1 then yields transition[1000].
+	long index = std::min((long)temp, 999L);
+	double remainder = temp - index;
+	output = (double) ((1.0f-remainder) * transition[index] + remainder * transition[1+index]) - phase;
 	return(output);
 
 }
@@ -698,30 +701,37 @@ bool maxiSample::save() {
 bool maxiSample::save(string filename)
 {
     fstream myFile (filename.c_str(), ios::out | ios::binary);
+    if (!myFile) return false;
 
     vector<short> shortAmps(amplitudes.size());
     for(size_t i=0; i < shortAmps.size(); i++) {
-        shortAmps[i] = static_cast<short>(round(amplitudes[i] * 32767.0));
+        shortAmps[i] = static_cast<short>(round(maxiMap::clamp(amplitudes[i], -1.0, 1.0) * 32767.0));
     }
+    // The header describes the data written here: amplitudes holds one channel, saved as
+    // 16-bit PCM. Fields read by load() describe the source file and may not match.
+    const short format = 1, channels = 1, bitsPerSample = 16;
+    const short blockAlign = channels * bitsPerSample / 8;
+    const int byteRate = mySampleRate * blockAlign;
+    const int fmtSize = 16;
+    const int dataSize = shortAmps.size() * blockAlign;
+    const int chunkSize = 36 + dataSize;
     // write the wav file per the wav file format
     myFile.seekp (0, ios::beg);
     myFile.write ("RIFF", 4);
-    myFile.write ((char*) &myChunkSize, 4);
+    myFile.write ((char*) &chunkSize, 4);
     myFile.write ("WAVE", 4);
     myFile.write ("fmt ", 4);
-    myFile.write ((char*) &mySubChunk1Size, 4);
-    myFile.write ((char*) &myFormat, 2);
-    myFile.write ((char*) &myChannels, 2);
+    myFile.write ((char*) &fmtSize, 4);
+    myFile.write ((char*) &format, 2);
+    myFile.write ((char*) &channels, 2);
     myFile.write ((char*) &mySampleRate, 4);
-    myFile.write ((char*) &myByteRate, 4);
-    myFile.write ((char*) &myBlockAlign, 2);
-    myFile.write ((char*) &myBitsPerSample, 2);
+    myFile.write ((char*) &byteRate, 4);
+    myFile.write ((char*) &blockAlign, 2);
+    myFile.write ((char*) &bitsPerSample, 2);
     myFile.write ("data", 4);
-    int myDataSize = shortAmps.size() * 2;
-    myFile.write ((char*) &myDataSize, 4);
-    //        myFile.write ((char*) temp, myDataSize);
-    myFile.write ((char*) shortAmps.data(), myDataSize);
-    return true;
+    myFile.write ((char*) &dataSize, 4);
+    myFile.write ((char*) shortAmps.data(), dataSize);
+    return myFile.good();
 }
 
 string maxiSample::getSummary()
@@ -738,11 +748,12 @@ string maxiSample::getSummary()
 
 //This plays back at the correct speed. Always loops.
 double maxiSample::play() {
+    // Wrap before reading: load() leaves position at the end of the buffer.
+    if ((long) position >= F64_ARRAY_SIZE(amplitudes)) {
+        position = 0;
+    }
     output = F64_ARRAY_AT(amplitudes,(long)position);
     position++;
-		if ((long) position >= F64_ARRAY_SIZE(amplitudes)) {
-			position = 0;
-		}
     return output;
 }
 
@@ -1059,9 +1070,11 @@ double maxiSample::playUntilAtSpeed(double end, double speed) {
 
 double maxiSample::playAtSpeed(double speed) {
 	double remainder = position - (long) position;
-	if ((long) position<F64_ARRAY_SIZE(amplitudes)) {
-		output = ((1-remainder) * F64_ARRAY_AT(amplitudes,1+ (long) position) + remainder * 
-		F64_ARRAY_AT(amplitudes,2+(long) position));//linear interpolation
+	size_t amplen = F64_ARRAY_SIZE(amplitudes);
+	if ((long) position<amplen) {
+		// Playback loops, so the interpolation indices wrap too.
+		output = ((1-remainder) * F64_ARRAY_AT(amplitudes,(1+ (long) position) % amplen) + remainder *
+		F64_ARRAY_AT(amplitudes,(2+(long) position) % amplen));//linear interpolation
 	}
 	else {
 		output=0;

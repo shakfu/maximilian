@@ -14,7 +14,7 @@ maxiEnvGen shiftEnv;
 
 void setup() {
     
-    beats.load("../../../beat2.wav");//load in your samples. Provide the full path to a wav file.
+    beats.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");//load in your samples. Provide the full path to a wav file.
     myFFT.setup(1024, 512, 1024);
     myInverseFFT.setup(1024, 512, 1024);
     shiftEnv.setup({0,50,0}, {10000,10000}, {1,1}, true);

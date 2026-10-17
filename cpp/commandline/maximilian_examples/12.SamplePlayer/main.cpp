@@ -5,7 +5,7 @@ maxiSample beats; //We give our sample a name. It's called beats this time. We c
 void setup() {//some inits
     
     //relative path to maximilian_examples/12.SamplePlayer/build - please replace if running from a different location
-    beats.load("../../../beat2.wav");//load in your samples. Provide the full path to a wav file.
+    beats.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");//load in your samples. Provide the full path to a wav file.
     cout << "Summary:\n" << beats.getSummary() << endl;//get info on samples if you like.
     
 }

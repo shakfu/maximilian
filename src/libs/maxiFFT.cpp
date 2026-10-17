@@ -82,7 +82,7 @@ bool maxiFFT::process(float value, fftModes mode) {
         }
 #endif
 		//shift buffer back by one hop size
-		memcpy(&buffer[0], &buffer[0] + hopSize, (windowSize - hopSize) * sizeof(float));
+		memmove(&buffer[0], &buffer[0] + hopSize, (windowSize - hopSize) * sizeof(float));
 		//reset pos to start of hop
 		pos= windowSize - hopSize;
     recalc = true;
@@ -171,7 +171,7 @@ float maxiIFFT::process(vector<float> &mags, vector<float> &phases, fftModes mod
 #endif
 		//add to output
 		//shift back by one hop
-		memcpy(&buffer[0], &buffer[0]+hopSize, (fftSize - hopSize) * sizeof(float));
+		memmove(&buffer[0], &buffer[0]+hopSize, (fftSize - hopSize) * sizeof(float));
 		//clear the end chunk
     memset(&buffer[0] + (fftSize - hopSize), 0, hopSize * sizeof(float));
 		//merge new output

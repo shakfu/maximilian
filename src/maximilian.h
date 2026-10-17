@@ -468,7 +468,7 @@ public:
      *     auto sumfunc = [](double val, double n) {return val + n;};
      */
     double reduce(size_t N, reduceFunction func, double initval) {
-        double val=0;
+        double val=initval;
         if (idx >= N) {
             for(int i=idx-N; i < idx; i++) {
                 val = func(val, buf[i]);
@@ -648,7 +648,7 @@ public:
     bool load(string fileName, int channel = 0);
     /*! Save the file */
     bool save();
-    /*! Save the file, specifying a file name \param filename The file name*/
+    /*! Save as a mono 16-bit PCM wav file \param filename The file name \returns false if the write failed*/
     bool save(string filename);
     // read a wav file into this class
     bool read();

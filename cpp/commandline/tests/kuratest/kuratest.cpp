@@ -14,8 +14,8 @@ maxiAsyncKuramotoOscillator kuraASyncSet(2), kuraASyncSet2(2);
 void setup() {//some inits
     cout << "Setup";
 //    biquad.set(maxiBiquad::PEAK, 800, 0.1,-10);
-    samp.load("/Volumes/LocalDataHD/src/Maximilian/cpp/commandline/beat2.wav");
-//    samp.loadOgg("/Volumes/LocalDataHD/src/Maximilian/cpp/commandline/crebit2.ogg");
+    samp.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");
+//    samp.loadOgg(MAXIMILIAN_SAMPLES_DIR "/crebit2.ogg");
     samp.trigger();
 //    samp.save("/tmp/test.wav");
 //    ts.setSample(&samp);
@@ -195,6 +195,7 @@ double bitsTest() {
 maxiTrigger zx;
 maxiCounter ct;
 maxiIndex idx;
+vector<double> idxValues {0,1,2,3,4,5,6,7,8,9};
 double trigSeqTest() {
     double w = 0;
     int t=0;
@@ -202,7 +203,7 @@ double trigSeqTest() {
     double seqidx = maxiMap::linlin(osc3.sinewave(1), -1, 1, 0,1);
     double trig = zx.onZX(pulse);
     double count = ct.count(trig,osc4.saw(0.3));
-    double seq = idx.pull(trig, seqidx, {0,1,2,3,4,5,6,7,8,9});
+    double seq = idx.pull(trig, seqidx, idxValues);
     if (trig) {
         cout << count << endl;
     }

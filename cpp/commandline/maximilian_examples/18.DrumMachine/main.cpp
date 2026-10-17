@@ -15,11 +15,11 @@ void setup() {//some inits
 	
     //YOU HAVE TO PROVIDE THE SAMPLES....
     
-	kick.load("/Users/yourusername/somewhere/kick.wav");//load in your samples. Provide the full path to a wav file.
-	snare.load("/Users/yourusername/somewhere/snare.wav");//load in your samples. Provide the full path to a wav file.
+	kick.load(MAXIMILIAN_SAMPLES_DIR "/blip.wav");//load in your samples. Provide the full path to a wav file.
+	snare.load(MAXIMILIAN_SAMPLES_DIR "/snare.wav");//load in your samples. Provide the full path to a wav file.
 	
 	
-	printf("Summary:\n%s", kick.getSummary());//get info on samples if you like.
+	printf("Summary:\n%s", kick.getSummary().c_str());//get info on samples if you like.
 	//beats.getLength();
 }
 

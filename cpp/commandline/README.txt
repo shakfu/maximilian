@@ -1,7 +1,1 @@
-mkdir build
-cd build
-
-cmake .. -DLINUX=ON
-
-the cmake file needs updating for osx
-
+Build from the repository root; see README.md.

@@ -20,10 +20,10 @@ void setup() {//some inits
 	
     //YOU HAVE TO PROVIDE THE SAMPLES....
     
-	sound1.load("../../../beat2.wav");//load in your samples. Provide the full path to a wav file.
+	sound1.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");//load in your samples. Provide the full path to a wav file.
 	
 	
-	printf("Summary:\n%s", sound1.getSummary());//get info on samples if you like.
+	printf("Summary:\n%s", sound1.getSummary().c_str());//get info on samples if you like.
 	//beats.getLength();
 }
 
@@ -45,7 +45,7 @@ void play(double *output) {//this is where the magic happens. Very slow magic.
 	//It has an attack coefficient, a hold val (in samples)
 	//and a release coefficient. Finally, it has a trigger input.
 	//If you stick a 1 in the trigger input, it retriggers the envelope
-	sampleOut=envelope.ar(sound1.play(1.), 0.1, 0.9999, 1, sampleTrigger); //
+	sampleOut=envelope.ar(sound1.play(), 0.1, 0.9999, 1, sampleTrigger); //
 		
 	output[0]=sampleOut;//left channel
 	output[1]=sampleOut;//right channel

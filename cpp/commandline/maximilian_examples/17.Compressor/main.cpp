@@ -6,7 +6,7 @@ maxiEnvGen threshEnv, ratioEnv;
 
 void setup() {//some inits
     
-    beats.load("../../../beat2.wav");//load in your samples. Provide the full path to a wav file.
+    beats.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");//load in your samples. Provide the full path to a wav file.
     
     dyn.setAttackHigh(20);
     dyn.setReleaseHigh(10);

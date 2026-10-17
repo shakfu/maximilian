@@ -38,16 +38,23 @@ in [docs/index.html](docs/index.html)
 
 
 
-Examples demonstrating different features can be found in the maximilian_examples folder.  Each example is in a subfolder, and can be built as follows using cmake:
+Examples demonstrating different features can be found in the maximilian_examples folder. Build the library, examples and tests from the repository root:
 
 ```
-cd [example folder]
-mkdir build
-cd build
-cmake ..
-make
-./maximilian
+cmake -S . -B build
+cmake --build build
+./build/cpp/commandline/example_1_TestTone
 ```
+
+Each example folder `N.Name` becomes the target `example_N_Name`. Libraries are static by default; pass `-DBUILD_SHARED_LIBS=ON` for a shared `maximilian`. Other options:
+
+- `MAXIMILIAN_VORBIS` (default `OFF`): OGG loading via stb_vorbis.
+- `MAXIMILIAN_BUILD_COMMANDLINE` (default `ON` at top level): the RtAudio player, examples and tests.
+- `MAXIMILIAN_INSTALL` (default `ON` at top level): install rules and an exported `maximilian::maximilian` target.
+- `MAXIMILIAN_BUILD_TESTS` (default `ON` at top level): unit tests in `tests/`, plus offline smoke runs of every program in `cpp/commandline/tests/` and `cpp/commandline/maximilian_examples/`. Run them with `ctest --test-dir build`.
+- `MAXIMILIAN_SANITIZE` (default `OFF`): build everything with AddressSanitizer and UBSan; any report fails the test.
+
+To use the library from another CMake project, either `add_subdirectory(maximilian)` or install it and call `find_package(maximilian)`, then link `maximilian::maximilian`.
 
 ### Web Audio
 

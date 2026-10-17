@@ -43,12 +43,13 @@ public:
 	T *melBands;
 	maxiMFCCAnalyser():melFilters(NULL),dctMatrix(NULL), melBands(NULL){};
 	~maxiMFCCAnalyser() {
+		// setup() allocates these with malloc.
 		if (melFilters) {
-			delete[] melFilters;
-			delete[] melBands;
-			delete[] dctMatrix;
+			free(melFilters);
+			free(melBands);
+			free(dctMatrix);
 #ifdef __APPLE_CC__
-			delete doubleSpec;
+			free(doubleSpec);
 #endif
 		}
 	}
@@ -179,6 +180,7 @@ private:
 				}
 			}
 		}
+		free(filtPos);
 	}
 	void createDCTCoeffs() {
 		T k = 3.14159265358979323846/numFilters;

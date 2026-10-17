@@ -13,7 +13,7 @@ maxiEnvGen delayEnv, fbEnv, speedEnv;
 
 
 void setup() {//some inits
-    beats.load("../../../beat2.wav");//load in your samples. Provide the full path to a wav file.
+    beats.load(MAXIMILIAN_SAMPLES_DIR "/beat2.wav");//load in your samples. Provide the full path to a wav file.
     //use envelopes to cycle through parameters
     delayEnv.setup({10, 1000, 10}, {10000,10000}, {1,1}, true);
     fbEnv.setup({0.2,0.99,0.2}, {15000,15000}, {1,1}, true);

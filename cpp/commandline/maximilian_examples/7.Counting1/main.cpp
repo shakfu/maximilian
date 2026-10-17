@@ -1,6 +1,6 @@
 
 #include "maximilian.h"
-#include "maxiSynths.h"
+#include "maxiClock.h"
 
 maxiOsc mySine; // This is the oscillator we will use to generate the test tone
 maxiClock myClock; // This will allow us to generate a clock signal and do things at specific times
